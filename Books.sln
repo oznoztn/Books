@@ -5,7 +5,7 @@ VisualStudioVersion = 16.0.29424.173
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "CSharp in a Nutshell", "CSharp in a Nutshell", "{41F3F7B8-4C84-4CE5-A13A-0DA3518BC2DC}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Nutshell", "Nutshell\Nutshell.csproj", "{2AB1EEA8-1973-49D7-BCD5-27BDFC0709D6}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Nutshell", "Nutshell\Nutshell.csproj", "{2AB1EEA8-1973-49D7-BCD5-27BDFC0709D6}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
