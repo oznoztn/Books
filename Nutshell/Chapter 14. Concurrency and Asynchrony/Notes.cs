@@ -41,5 +41,45 @@ namespace Nutshell.Chapter_14._Concurrency_and_Asynchrony
         }
         #endregion
 
+        #region Note #2 - IsAlive, Name, Thread.CurrentThread
+        public void Note2()
+        {
+            // 1)
+            // Once it's started, a thread's IsAlive property returns True, 
+            // until the thread reaches the point at which its execution ends.
+
+            Thread secondaryThread = new Thread(() =>
+            {
+                Console.WriteLine("Greetings from secondaryThread.");
+                Thread.Sleep(50);
+            });
+
+            bool state = secondaryThread.IsAlive; // False
+
+            // 2)
+            // A thread ends when the passed delegate finishes executing. 
+            // So, IsAlive property returns False.
+
+            // 3)
+            // Once a thread ended, you can not re-start.
+            // So, finishedThread.Start() will throw an exception.
+
+            // 4)
+            // You can name a thread. It is useful for debugging in VS.
+            // But you can set its name just for once.
+            // An attempt to re-name it will throw an exception.
+            secondaryThread.Name = "Secondary Thread";
+
+            // 5) Thread.CurrentThread returns the thread executing the code
+            Thread.CurrentThread.Name = "Main Thread";
+
+            secondaryThread.Start();
+
+            for (int i = 0; i < 100; i++)
+            {
+                Console.WriteLine("M");
+            }
+        }
+        #endregion
     }
 }
