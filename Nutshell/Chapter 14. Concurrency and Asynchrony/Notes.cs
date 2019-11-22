@@ -81,5 +81,55 @@ namespace Nutshell.Chapter_14._Concurrency_and_Asynchrony
             }
         }
         #endregion
+
+        #region Note #3 - Join, Sleep, Yield
+        public void Note3_Join_Sleep_Yield()
+        {
+            // Join
+            // Bir thread'in, başka bir thread'in işini bitirmesini beklemesi
+            //   Thread'in Join metodunu çağırarak, thread'in sonlanmasını/işini bitirmesini bekleyebilirim.
+            //    Join metoduna timeout süresini belirtebilmek için TimeSpan objesi verilebilir.
+            //    Thread sonlanırsa True, zamanaşımına uğrarsa False dönderir.
+
+            // Sleep(n)
+            // Pauses a thread 
+
+            // Sleep(0)
+            // Söz konusu thread kendisine tahsis edilen cpu time slice'ından 
+            // (anında ve gönüllü olarak) 
+            // feragat eder ki CPU bu süreyi diğer thread'lere verebilsin.
+
+            // Yield()
+            // Sleep(0) ile aynı şeyi yapar. 
+            // Farkı, Yield() yalnızca aynı processor üzerindeki thread'ler için kendi CPU time'ından feragat eder.
+
+            // NOT: Yield()
+            //      Eğer bu kodu programın herhangi bir kısmında çalıştırmak, 
+            //      application'ı patlatıyorsa
+            //      neredeyse kesinlikle application'da bug var demektir.
+
+            Thread thread = new Thread(() =>
+            {
+                for (int i = 0; i < 100; i++)
+                {
+                    Console.WriteLine("_");
+                }
+            });
+
+            thread.Start();
+            thread.Join(); // Who is waiting? Main Thread.
+
+            for (int i = 0; i < 100; i++)
+            {
+                Console.WriteLine("#");
+            }
+
+            // With Join   : ______________________################
+            // Without Join: ___________#######_________#########__
+
+            // Join veya Sleep ile bekletilen bir thread "bloklanmış" olur.
+        }
+        #endregion
+
     }
 }
