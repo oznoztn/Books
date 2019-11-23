@@ -150,5 +150,68 @@ namespace Nutshell.Chapter_14._Concurrency_and_Asynchrony
          *      Adı üstünde.
          */
         #endregion
+
+        #region Note #5 - On Blocking and Spinning
+        public void Note5_Blocking_Spinning()
+        {
+            /*
+             *          BLOCKING of a thread
+             * Çalışması herhangi bir nedenden ötürü duran thread bloklanmış addedilir.
+             * 
+             * Örneğin:
+             *  Sleep ile duraklatılmış,
+             *  Join ile bir başka thread'in işini bitirmesini bekleyen bir thread.
+             * 
+             * Bloklanan thread CPU time'ını başkaları için bırakır (yield), 
+             * ve o andan itibaren CPU time tüketmemeye başlar.
+             * Ta ki bloklama kalkana kadar.
+             * 
+             * Thread BLOCKING ve UNBLOCKING esnasında OS context switching denilen işlemi gerçekleştirir.
+             * Bu işlemin, genelde 1-2 ms'lik, göreceli olarak ufak, bir masrafı vardır.
+             * 
+             * WIKI:
+             * In computing, a context switch is the process 
+             * of storing and restoring the state (more specifically, the execution context) 
+             * of a process or thread so that execution can be resumed from the same point at a later time. 
+             * This enables multiple processes to share a single CPU 
+             * and is an essential feature of a multitasking operating system.
+             */
+
+            DateTime nextStartDate = DateTime.Now.AddSeconds(30);
+
+            // BLOCKING
+            Thread blockingThread = new Thread(() =>
+            {
+                while (DateTime.Now < nextStartDate)
+                {
+                    Thread.Sleep(TimeSpan.FromSeconds(3));
+                }
+
+                Console.WriteLine("the blocking thread has run");
+            });
+
+            // SPINNING
+            Thread spinningThread = new Thread(() =>
+            {
+                while (DateTime.Now < nextStartDate)
+                {
+                }
+
+                Console.WriteLine("the spinning thread has run");
+            });
+
+            /*
+             * Spinning'in kısa süreceği senaryolarda, birkaç ms, spinning tekniği faydalıdır.
+             * Çünkü context switching işlemi maliyetlidir.
+             * 
+             * Spinning, why?
+             *   Spinning is useful because blocking a thread is not FREE.
+             *     In a scenario of heavy I/O-bound computing, blocking a thread will definitely incur performance penalty.
+             */
+
+            blockingThread.Start();
+            spinningThread.Start();
+        }
+        #endregion
     }
 }
