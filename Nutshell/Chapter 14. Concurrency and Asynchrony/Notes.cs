@@ -131,5 +131,24 @@ namespace Nutshell.Chapter_14._Concurrency_and_Asynchrony
         }
         #endregion
 
+        #region Note #4 - On I/O & Compute Bound operations
+        /* Temelde iki tip işlem tipi vardır:
+         *  1) I/O Bound 
+         *      Zamanının büyük bir kısmını bir şeyin gerçekleşmesini beklemeye harcayan operasyonlar:
+         *        En basit örnek Console.ReadLine.
+         *        Ayrıca Thread.Sleep() veya .Join() de bu kategoriye girer.
+         *        
+         *     Bu tip bir işlem iki farklı şekilde çalışır.
+         *       1) Senkronize: 
+         *            Mevcut thread üzerinde, işlemin bitmesini bekler. 
+         *            Senkronize çalışan bir işlem bekleme yaparken mevcut thread'i bloklar.       
+         *            
+         *       2) A-Senkronize: 
+         *          İşlem bittiğinde verilen callback fonksiyonunu çalıştırır.
+         *        
+         *  2) Compute Bound
+         *      Adı üstünde.
+         */
+        #endregion
     }
 }
