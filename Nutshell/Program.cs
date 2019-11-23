@@ -8,8 +8,6 @@ namespace Nutshell
         static void Main(string[] args)
         {
             Nutshell.Chapter_14._Concurrency_and_Asynchrony.Notes notes = new Notes();
-
-            notes.Note1_ThreadCreation();
         }
     }
 }
