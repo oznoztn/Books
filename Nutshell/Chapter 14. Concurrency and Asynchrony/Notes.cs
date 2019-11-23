@@ -234,5 +234,40 @@ namespace Nutshell.Chapter_14._Concurrency_and_Asynchrony
             }
         }
         #endregion
+
+        #region Note #7 - Foreground and Background Threads
+        public void Note7_ForegroundBackgroundThreads(string[] args)
+        {
+            // Oluşturulan her bir thread, default olarak, Foreground Thread'dir. 
+            // Main thread bir BACKGROUND THREAD'dir.
+
+            // Bir FT, çalıştığı müddetçe, programı canlı tutar.
+            // Yani FT'ler execution'ını bitirmeden program sonlanmaz.
+            //    Main Thread sonlanmış olsa dahi.
+
+            // FT'lerin çalışması (execution) sonlandığında application sonlanır.
+            // O anda çalışan BT'ler (varsa) ansızın (abruptly) kapatılırlar.
+
+            // Prosesin bu şekilde sonlanması sonucu Background Thread'lerin birden kapatılması
+            // varsa finally bloklarının atlanmasına sebebiyet verir.
+            // Eğer finally bloğunda bazı temizlik işlemleri yapılıyorsa bu durum sıkıntı oluşturacaktır.
+
+            // BT lerin sonlanmasını bekleyerek böyle bir durumun oluşması önlenebilir:
+            // If you’ve created the thread yourself, call Join on the thread (or use other signaling contructs).
+            // If you’re on a pooled thread, use an event wait handle.
+
+            // Thread durumunu sorgulamak veya değiştirmek için IsBackround kullanılır.
+
+            Thread worker = new Thread(() => Console.ReadLine());
+
+            if (args.Length > 0)
+                worker.IsBackground = true;
+
+            worker.Start();
+
+            if (!Thread.CurrentThread.IsAlive)
+                Console.WriteLine("Main Thread (Background Thread) is dead.");
+        }
+        #endregion
     }
 }
