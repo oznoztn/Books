@@ -213,5 +213,26 @@ namespace Nutshell.Chapter_14._Concurrency_and_Asynchrony
             spinningThread.Start();
         }
         #endregion
+
+        #region Note #6 - On captured values and lambda expressions
+        public void Note6_Lamb()
+        {
+            for (int i = 0; i < 10; i++)
+                new Thread(() => Console.WriteLine(i)).Start();
+
+            Console.WriteLine();
+
+            // As long as the loop is alive, the variable i will point to the same location in the memory.
+            // Therefore, in a multi thread scenario, the thread that loops through this loop is to work with the same variable i.
+            // As a result, the outcome is going to be indeterministic in this case.
+            // To prevent this, copy the i into a new local variable.
+            // By doing this you let the new variable live in the local stack of the very thread that executes the loop.
+            for (int i = 0; i < 100; i++)
+            {
+                int copy = i;
+                new Thread(() => { Console.WriteLine(copy); }).Start();
+            }
+        }
+        #endregion
     }
 }
