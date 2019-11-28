@@ -293,5 +293,42 @@ namespace Nutshell.Chapter_14._Concurrency_and_Asynchrony
             }
         }
         #endregion
+
+        #region Note #10 - Shared State A - The Thread Unsafety
+        class Note10_SharedStateA_ThreadUnsafety
+        {
+            public Note10_SharedStateA_ThreadUnsafety()
+            {
+                // Threads share data if they have a common reference to the same object instance:
+
+                // Alttaki örnekte main thread ve yeni oluşturulan thread,
+                // aynı ThreadTest instance'ı üzerindeki Go metodunu çağırdıklarından, 
+                // _done değişkenini paylaşacaklar.
+
+                // Dolayısıyla bir önceki örnekte olduğu gibi iki tane "Done!" çıktısı almayacağız.
+
+                SharedClass sharedClass = new SharedClass();
+
+                new Thread(sharedClass.Go).Start(); // a newly created thread
+                sharedClass.Go(); // Main thread
+            }
+
+            internal class SharedClass
+            {
+                bool _done;
+
+                // Statik metot olmadığına dikkat et.
+                public void Go()
+                {
+                    if (!_done)
+                    {
+                        _done = true;
+                        Console.WriteLine("Done!");
+                    }
+                }
+            }
+        }
+        #endregion
+
     }
 }
