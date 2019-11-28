@@ -330,5 +330,46 @@ namespace Nutshell.Chapter_14._Concurrency_and_Asynchrony
         }
         #endregion
 
+        #region Note #11 - Shared State B - More on Thread Unsafety 
+        class Note11_SharedStateB_MoreOnThreadUnsafety
+        {
+            // Static fields are shared between the threads in the application domain.
+            static bool _done;
+
+            public Note11_SharedStateB_MoreOnThreadUnsafety()
+            {
+                new Thread(Go).Start();
+                Go();
+            }
+
+            public void Go()
+            {
+                if (!_done)
+                {
+                    // I. Durum
+                    // Bu işlem ilk başta yapıldığında çift yazılma olasılığı DÜŞÜK,
+                    _done = true;
+                    Console.WriteLine("Done!");
+
+                    // II. Durum
+                    // Çift yazılma olasılığı çok daha YÜKSEK olur
+                    Console.WriteLine("Done!");
+                    _done = true;
+
+                    // What is the rationale behind the problem?
+                    //  One of the thread may evaluate the if statement while the other one is setting the variable _done true.
+                    //  This introduces the possibility that is more than one thread is already in the if block
+                    //    which eventually defeats the purpose of the if control statement.
+
+                    // I. durumda bunun olasılığı daha düşük olmasının nedeni bu. 
+                    // Ama her türlü bir olasılık var ve bu göz ardı edilemez.
+
+                    // This uncertainty makes the code "thread unsafe".
+
+                    // REMEMBER: Singleton classes are not thread safe by default.
+                }
+            }
+        }
+        #endregion
     }
 }
