@@ -413,5 +413,54 @@ namespace Nutshell.Chapter_14._Concurrency_and_Asynchrony
             }
         }
         #endregion
+
+        #region Note #13 - Passing Data to Threads
+        class Note13_PassingDataToThreads
+        {
+            public void PassingDataLambda()
+            {
+                // Lambda ifadelerini kullanarak
+                Thread thread = new Thread(() => Print("M"));
+                thread.Start();
+
+
+                Thread thread2 = new Thread(() => Print("G", 1));
+                thread2.Start();
+            }
+
+            public void PassingDataOldSchool()
+            {
+                // Eski yol, lambda ifadeler henüz tanıtılmamışken...
+
+                // thread.Start() metodunun object alan bir overload'u mevcut ...
+
+                // Dezevantajı birden fazla argüman verememek
+                // Object tipinde argüman aldığından, çoğu zaman cast gerekir 
+
+                Thread oldSchoolThread = new Thread(Print);
+                oldSchoolThread.Start("M G E ");
+            }
+
+            public void Print(string message)
+            {
+                Console.WriteLine(message);
+            }
+
+            public void Print(string message, int t)
+            {
+                for (int i = 0; i < t; i++)
+                {
+                    Console.WriteLine(message);
+                }
+            }
+
+            public void Print(object obj)
+            {
+                string message = (string)obj;
+
+                Console.WriteLine(message);
+            }
+        }
+        #endregion
     }
 }
