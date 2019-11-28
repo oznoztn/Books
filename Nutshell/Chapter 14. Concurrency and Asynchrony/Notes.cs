@@ -269,5 +269,29 @@ namespace Nutshell.Chapter_14._Concurrency_and_Asynchrony
                 Console.WriteLine("Main Thread (Background Thread) is dead.");
         }
         #endregion
+
+        #region Note #9 - The Local State
+        class Note9_LocalState
+        {
+            public Note9_LocalState()
+            {
+                // CLR her bir thread'e ayrı memory stack'ı tahsis eder. 
+                // Dolayısıyla lokal değişkenler birbirlerinden ayrı stack'da bulunacaklarından
+                // lokal değişkenler ortaklaşa kullanılamazlar.
+
+                // Local değişkenler birbirlerinden ayrı olduğundan ekrana yazılan toplam "M" harfi 2+2=4            
+
+                new Thread(Go).Start(); // Yeni bir thread Go metodunu çağırıyor
+                Go(); // Main thread Go metodunu çağırıyor
+            }
+
+            static void Go()
+            {
+                // 'cycles' lokal değişkeni ...
+                for (int cycles = 0; cycles < 2; cycles++)
+                    Console.Write('M');
+            }
+        }
+        #endregion
     }
 }
