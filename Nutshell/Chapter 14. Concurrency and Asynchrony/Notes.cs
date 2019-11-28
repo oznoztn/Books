@@ -371,5 +371,47 @@ namespace Nutshell.Chapter_14._Concurrency_and_Asynchrony
             }
         }
         #endregion
+
+        #region Note #12 - Shared State C - Obtaining An Exclusive Lock
+        class Note12_SharedStateC_ObtainingAnExclusiveLock
+        {
+            static bool _done;
+            static readonly object Locker = new object();
+
+            public Note12_SharedStateC_ObtainingAnExclusiveLock()
+            {
+                new Thread(Go).Start(); // calls Go() on a newly created thread
+                Go(); // calls Go() on the main thread
+            }
+
+            static void Go()
+            {
+                // The remedy is to obtain an exclusive lock while reading and writing to the common field. 
+                // C# provides the lock statement for just this purpose:
+
+                // The mechanism is used to make the critical shared state/data accessible
+                //   only' by one thread at the same time.
+
+                // Multithread bir ortamda kodun bu şekilde korunmasıyla 
+                // önceki örnekteki kod davranışındaki belirsizliğin kaldırılması 
+                // (birden fazla Done yazılabilme olasılığının ortadan kaldırılması)
+                // kodun THREAD-SAFE olduğu anlamına gelir.
+
+                // lock mekanizması silver-bullet bir teknik değildir.
+                // Locklama işlemi düzgün yapılmadığında deadlock'a neden olabilir.
+                // lock'lama işleminin kendisi başlı başına sorun oluşturabilir.
+                // Bundan dolayı lock-free algoritmalar önem kazanmaktadır.
+
+                lock (Locker)
+                {
+                    if (!_done)
+                    {
+                        _done = true;
+                        Console.WriteLine("Done");
+                    }
+                }
+            }
+        }
+        #endregion
     }
 }
