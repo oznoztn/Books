@@ -294,6 +294,43 @@ namespace Nutshell.Chapter_14._Concurrency_and_Asynchrony
         }
         #endregion
 
+        #region Note #8 - Exceptions
+        /// <summary>
+        /// Note #8 - Exceptions
+        /// </summary>
+        internal class Note08_Exceptions
+        {
+            public void Note8_Exceptions()
+            {
+                try
+                {
+                    // Thread oluşturulurken devrede olan try/catch mekanizması, 
+                    // thread işini yaparken devrede olmaz.
+
+                    // Olası hatalar thread execution'unun başladığı noktada kontrol altına alınmalıdır.
+
+                    var t = new Thread(ThrowsException);
+                    t.Start();
+                    t.Join();
+
+                    // Her bir thread'in birbirinden farklı
+                    //  birer execution path'a sahip olduğunu göz önünde tutarsak bu gayet mantıklı.
+                }
+                catch (Exception e)
+                {
+                    // Hiç bir zaman burası çalışmayacak.
+                    throw;
+                }
+            }
+
+            void ThrowsException()
+            {
+                // try/catch bloğunun burada olması gerekir
+                throw new ArgumentException();
+            }
+        }
+        #endregion
+
         #region Note #10 - Shared State A - The Thread Unsafety
         class Note10_SharedStateA_ThreadUnsafety
         {
