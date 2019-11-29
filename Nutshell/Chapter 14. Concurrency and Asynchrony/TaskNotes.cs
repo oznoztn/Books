@@ -8,6 +8,7 @@ namespace Nutshell.Chapter_14._Concurrency_and_Asynchrony
 {
     public class TaskNotes
     {
+        #region # 2.1 - Thread Pooling
         public void Note1_ThreadPooling()
         {
             /*
@@ -45,7 +46,9 @@ namespace Nutshell.Chapter_14._Concurrency_and_Asynchrony
              *  Pooled Thread'ler 'daima' Background Thread'dirler.
              */
         }
+        #endregion
 
+        #region # 2.2 - Tasks basics
         public void Note2_TaskBasics()
         {
             // HOT TASK: Otomatik olarak çalışmaya başlayan task tipidir.
@@ -88,6 +91,36 @@ namespace Nutshell.Chapter_14._Concurrency_and_Asynchrony
             //   If the tasks are I/O-bound, use TaskCompletionSource and asynchronous functions ..
             //   If the tasks are compute-bound, use a producer/consumer queue ..
         }
+        #endregion
 
+        #region # 2.3 - Returning a value from a Task
+        public void Note3_ReturningAValueFromATask()
+        {
+            // Değer dönderebilen task için Task<TResult> jenerik sınıfı bulunur
+            // Task.Run()'dan, Task<TResult> alabilmek için 
+            //   Task.Run() metodunu Func<TResult> ile çağırmalısın.
+
+            Func<int> mathFunc = () =>
+            {
+                Thread.Sleep(2500);
+                return 6;
+            };
+
+            Task<int> task = Task.Run(mathFunc);
+
+            // Result property'sini sorgulayarak sonuç elde edilebilir.
+            // Eğer sonuç henüz hesaplanmamışsa, 
+            //   Result'a erişim mevcut thread'i bloklayacaktır.
+
+            if (task.Status == TaskStatus.Running)
+                Console.WriteLine("Task is running");
+
+            int result = task.Result;
+            Console.WriteLine(result);
+
+            // Task<T> ye içerisinde gelecek zamanda kullanıma uygun olacak
+            // bir Result barındıran "future" denebilir.
+        }
+        #endregion
     }
 }
