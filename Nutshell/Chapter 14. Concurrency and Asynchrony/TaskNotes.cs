@@ -122,5 +122,51 @@ namespace Nutshell.Chapter_14._Concurrency_and_Asynchrony
             // bir Result barındıran "future" denebilir.
         }
         #endregion
+
+        #region # 2.4 - Tasks and throwing exceptions
+        public void Note4_Exceptions()
+        {
+            // Thread'in aksine Task kendisine verilen iş exception fırlattığında bu exception'ı 
+            //  Wait() metodunu çağırana veya Result property'sine erişmek isteyene dönderir
+
+            // Wait metodu veya Result property'si ile etkileşime girilmezse exception ses çıkarmaz,
+            //   yani hiç bir şey olmamış gibi program çalışmaya devam eder.
+
+            // Bu tip task'lara OTONOM TASK denir (set-and-forget)      
+
+            // Otonom tasklarda meydana gelen unhandled exception'lara ise UNOBSERVED EXCEPTION denir.
+
+            // Otonom tasklara verilen işlemlerin exception fırlatma olasılığı varsa
+            //   thread de olduğu gibi task kodunu try/catch bloğu içine almakta fayda var.
+            //   Aksi halde sessiz kalarak zamanında tespit edilemeyecek olan bu exception
+            //     programın mevcut state'ini bozarak (can cause the app to fall to an invalid state), 
+            //     programın ileri safhasında yeni hatalara sebebiyet verebilir
+            //       Tüm bu olan biten bug teşhisini zorlaştıracaktır.
+
+            // CLR wraps the exception in an AggregateException.
+            try
+            {
+                Func<int> func = ThrowException; // defining an action to pass in a task's ctor
+
+                Task<int> task = Task.Run(func);
+
+                // accessing Result property propagates an exception, if any, to caller 
+                int r = task.Result;
+
+                Console.ReadLine();
+            }
+            catch (AggregateException e)
+            {
+                Console.WriteLine(e.Message);
+            }
+        }
+        int ThrowException()
+        {
+            Console.WriteLine("slam");
+            throw new ArgumentException();
+        }
+
+
+        #endregion
     }
 }
