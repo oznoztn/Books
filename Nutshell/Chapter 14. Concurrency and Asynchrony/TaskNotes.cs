@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace Nutshell.Chapter_14._Concurrency_and_Asynchrony
 {
@@ -43,5 +45,49 @@ namespace Nutshell.Chapter_14._Concurrency_and_Asynchrony
              *  Pooled Thread'ler 'daima' Background Thread'dirler.
              */
         }
+
+        public void Note2_TaskBasics()
+        {
+            // HOT TASK: Otomatik olarak çalışmaya başlayan task tipidir.
+            // COLD TASK: Otomatik çalışmaya başlamazlar. Nadiren kullanılırlar.
+
+            Action writeHelloAction = () => Console.WriteLine("Greetings from the hot one!");
+            Task hotTask = Task.Run(writeHelloAction);
+
+            Task frozenTask = new Task(() => Console.WriteLine("Greetings from the cold one!"));
+            frozenTask.Start();
+
+            // Default olarak CLR taskları thread pool'da çalıştırır.
+            // TP'deki threadler BACKGROUND T. olduklarına göre
+            // Main thread sonlandığında bütün task'lar kapatılacaktır.
+            // Bunu engellemek adına main thread'i işlem bitene dek bloklaman gerekir.
+
+            Task blockingTask = Task.Run(() =>
+            {
+                // simulates a cpu-intensive operation ...
+                Thread.Sleep(4000);
+                Console.WriteLine("Foo");
+            });
+            Console.WriteLine(blockingTask.IsCompleted); // False
+            blockingTask.Wait(); // Blocks until task is complete
+
+            // Tasks should perform short-term operations
+            //  and should NOT block the thread (that runs that shit son)
+            //      Üstteki örnekteki gibi olmamalı yani.
+            // Suppose you have a task of cpu-bound operation
+            //  and you don't want it to use a pooled thread
+            //      Then pass TaskCreationOptions.LongRunning ...
+            Task longRunninTask =
+                Task.Factory.StartNew(() => {/*do sth*/}, TaskCreationOptions.LongRunning);
+
+            // (s. 583)
+            // TP'de tek bir tane uzun işlem yapmak sıkıntı oluşturmaz
+            // Fakat uzun süren fazla işlem performansa büyük sıkıntı oluşturur. 
+
+            // In general, there're way better methods than using TaskCreationOptions.LongRunning:
+            //   If the tasks are I/O-bound, use TaskCompletionSource and asynchronous functions ..
+            //   If the tasks are compute-bound, use a producer/consumer queue ..
+        }
+
     }
 }
