@@ -340,5 +340,48 @@ namespace Nutshell.Chapter_14._Concurrency_and_Asynchrony
          * */
 
         #endregion
+
+        #region # 2.8 - Genel Notlar
+        /*
+         * Asenkron olan metot isimleri Async ile bitmelidir.
+         * 
+         * async metotlar 'await' keyword'unu metot gövdesinde barındırmalı.
+         *  Aksi halde bu kod asla 'yield' etmez. 
+         *    async Task<int> Run() { Task.Delay(3000); return 1; }
+         *      await yok, senkronize çalışacak.
+         *  
+         * 'async void' ifadesi yalnızca event handler'ları asenkron yapmak için kullanılmalı.
+         * 
+         * BLOKLAMA YAPMA
+         * Task'ın işin bitirmesini bekleyen kod yazarken mevcut thread'i bloklama
+         * Veya bloklama yapmadan Task'ın işini bitirmesini bekleyen kod yaz.
+         * Dolayısıyla:
+         * **************************************************
+         * Background task sonucunu elde etmek isterken
+         *      Task.Result veya Task.Wait YERİNE await
+         * Herhangi bir Task'ın tamamlanmasını beklediğinde
+         *      Task.WaitAny YERİNE await Task.WhenAny
+         * Bütün Task'ların tamamlanmasını beklediğinde
+         *      Task.WaitAll YERİNE await Task.WhenAll
+         * Belirli bir süre beklemek istediğinde
+         *      Thread.Sleep(n) yerine await Task.Delay(n)
+         ****************************************************
+         * 
+         * Daha az 'stateful' kod yaz
+         *  Global obje state'ine veya 
+         *      bir metodun çalışıp/çalışmamasına bağımlı olmak yerine 
+         *           metodun dönderdiği değere bağımlı ol.
+         * 
+         * Neden mi?
+         *  Kodu anlaması daha kolay olur.
+         *  Kodu test etmesi daha kolay olur.
+         *  Async ile sync kodları beraber çalıştırmak ÇOK daha kolay olur.
+         *  'Race Condition' sorunlarından tamamıyla kaçınılabilir.
+         *  Dönen değere bağımlı olmak async fonksiyonları kordine etmeyi kolaylaştırır.
+         *  Dependency Injection ile beraber çok iyi iş çıkarır.
+         *
+         */
+        #endregion
+
     }
 }
