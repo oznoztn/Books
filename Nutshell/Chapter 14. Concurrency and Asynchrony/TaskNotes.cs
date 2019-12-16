@@ -171,7 +171,7 @@ namespace Nutshell.Chapter_14._Concurrency_and_Asynchrony
         #endregion
 
         #region # 2.5 - Awaiters
-        public void Note_4()
+        public void Note5_Awaiters()
         {
             // Continuation, task tamamlandığında (başarılı veya başarısız) çalışan callback metoda denir.
             Task<int> task = Task.Run(() =>
@@ -237,6 +237,60 @@ namespace Nutshell.Chapter_14._Concurrency_and_Asynchrony
             });
 
             Console.ReadLine(); // blocking
+        }
+        #endregion
+
+        #region # 2.6 Task Completion Source (Example)
+        class TaskCompletionSourceExample
+        {
+            /*
+             * TaskCompletionSource
+             * Belirli bir süre başlayacak ve yine belirli bir süre sonra son bulacak 
+             *  her türlü operasyon için bir Task oluşturmaya olacak tanır.
+             * 
+             * TSC, tsc metotları ile manual olarak yönetilebilen bir 'köle' task verir.
+             *          
+             * TSC üzerindeki metotlar yalnızca bir kez çalıştırılmalıdır. 
+             * Aksi halde SetX şeklindeki metotlar exception, 
+             *  TryX şeklinde olanlar false dönderir.
+             * 
+             * TSC'nin I/O-BOUND tipinde olan uzun süren veya mevcut threadi bloklayan bir operasyonun bulunduğu 
+             *  senaryoda kullanılması uygundur.
+             *  
+             * TSC'nin asıl gücü thread bağlı olmayan / thread kullanmayan 
+             *  bir operasyonu temsil eden task oluşturabilmesidir:         *  
+             *  
+             *  Örneğin 3 saniye sonra çalışacak ve bir değer dönderecek bir operasyon düşün.
+             *  TSC ile bu operasyonu herhangi bir thread'e bağlı kalmadan Timer ile gerçekleştirebilirim.
+             *   Böylece hem thread oluşturma masrafı ortadan kalkmış olur
+             *    hem de mevcut thread 3 sn bloklanmamış olur.
+             *  
+             */
+            public TaskCompletionSourceExample()
+            {
+                Task<int> task = GetNumber();
+
+                TaskAwaiter<int> awaiter = task.GetAwaiter();
+
+                // continuation tanımlıyorum:
+                // continuation tanımlayarak, 
+                //   task sonucunu HİÇBİR THREADi bloklamadan yazdırıyorum:
+                awaiter.OnCompleted(() => Console.WriteLine(awaiter.GetResult()));
+            }
+
+            Task<int> GetNumber()
+            {
+                TaskCompletionSource<int> tcs = new TaskCompletionSource<int>();
+
+                var timer = new System.Timers.Timer(5000);
+                timer.Elapsed += delegate
+                {
+                    timer.Dispose();
+                    tcs.SetResult(72);
+                };
+                timer.Start();
+                return tcs.Task;
+            }
         }
         #endregion
     }
