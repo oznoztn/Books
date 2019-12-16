@@ -240,7 +240,7 @@ namespace Nutshell.Chapter_14._Concurrency_and_Asynchrony
         }
         #endregion
 
-        #region # 2.6 Task Completion Source (Example)
+        #region # 2.6 - Task Completion Source (Example)
         class TaskCompletionSourceExample
         {
             /*
@@ -292,6 +292,53 @@ namespace Nutshell.Chapter_14._Concurrency_and_Asynchrony
                 return tcs.Task;
             }
         }
+        #endregion
+
+        #region # 2.7 - On Async, I/O & CPU Boundness
+        /*
+         * async kod CLR tarafından state machine'e çevrilir. 
+         * Task tamamlandığında execution'un kaldığı yerden devam etmesini sağlayan şey budur.
+         * 
+         * I/O Bound: Database hit, requesting a web page
+         * 
+         * Task veya Task<T> dönderen I/O Bound işlemi async function içerisinde 'await' ile bekleriz
+         *
+         * Compute Bound işlemler için Task.Run() dan dönen 'hot' taskı bekleriz, 'await'. 
+         * Task.Run() ile başlatılan maliyetli işlem background thread'de yapılır.
+         * Bu task thread-bound bir task'tır.
+         * 
+         * Hatırlarsan tasklar thread-bound olmak zorunda değillerdi.
+         *  Çoğu senaryoda da thread-bound değillerdir zaten.
+         *  
+         * Bir işlemin I/O Bound ve CPU Bound olduğunu tespit etmek önemli. 
+         *  Çünkü doğru yapı kullanıldığında çok büyük bir performans artışı elde edilecektir.
+         * 
+         * 
+         * Herhangi bir kod yazmadan önce kendine şunu sor
+         *      1) Kod bir şeyler bekliyor mu? 
+         *          Veritabanıdan bir şey, bir web sorgusunun sonucu, konsol girdisi ..
+         *              Eğer cevap EVET ise I/O Bound işlem
+         *      2) Kod yoğun işlem gücü gerektiren maliyetli bir işlem mi gerçekleştiriyor?
+         *          Eğer cevap EVET ise CPU Bound işlem
+         *  
+         * İşlem I/O Bound ise async ve await'i Task.Run()'sız kullan.
+         *     Never ever use TPL!
+         *  
+         * İşlem CPU Bound ise Task.Run ile işlemi bir başka thread üzerinde gerçekleştir.
+         * İşin doğasına göre TPL kullanılabilir.
+         *      *
+         * Performing a computationally expensive operation on a different thread with Task.Run instruction
+         * does not mean that operation is going to be highly performant
+         * It is all about the context!
+         *
+         * I mean, we already know that, creating a brand new thread is not a cheap operation
+         * and the context-switching procedure on the other hand is pretty expensive especially in multi-threaded environment.
+         * As a result, an attempt to harness a new thread via Task.Run may not pay the dividens
+         *  and may even be a total disservice,
+         *   keep that in mind.
+         *
+         * */
+
         #endregion
     }
 }
