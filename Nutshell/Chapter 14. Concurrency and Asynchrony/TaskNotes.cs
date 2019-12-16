@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -167,6 +168,76 @@ namespace Nutshell.Chapter_14._Concurrency_and_Asynchrony
         }
 
 
+        #endregion
+
+        #region # 2.5 - Awaiters
+        public void Note_4()
+        {
+            // Continuation, task tamamlandığında (başarılı veya başarısız) çalışan callback metoda denir.
+            Task<int> task = Task.Run(() =>
+            {
+                Thread.Sleep(2000);
+                return 1;
+            });
+
+            // task.GetAwaiter() metodu 'awaiter' objesi dönderir.
+            TaskAwaiter<int> awaiter = task.GetAwaiter();
+
+            // awaiter objesinin OnCompleted property'sine
+            // task tamamlandığında çalışacak callback (Action) set edilir.
+            awaiter.OnCompleted(() =>
+            {
+                int result = awaiter.GetResult();
+                Console.WriteLine($"Hesaplama tamamlandı. Sonuç: {result}");
+            });
+
+            // Sonucu elde etmenin iki yolu var: 
+            //    TaskAwaiter üzerinde GetResult() metodunu çağırmak
+            //    Task'daki Result property'sine erişmek.
+            Console.WriteLine(task.Result);
+            Console.WriteLine(awaiter.GetResult());
+
+
+
+            Task<int> faultyTask = Task.Run(() =>
+            {
+                // Unobserved Exception
+                throw new ArgumentException();
+                return 6;
+            });
+
+            TaskAwaiter<int> awaiterf = faultyTask.GetAwaiter();
+            awaiterf.OnCompleted(() =>
+            {
+                // Task kodunda exception oluşmuşsa, 
+                // continuation kodu sonuca erişmek istediğinde
+                //   exception tekrar fırlatılır (re-throw)
+
+                // Sonucu elde etme şekline göre fırlatılan exception tipi değişir:
+                //   GetResult() -> Exception direk fırlatılır
+                //   Result -> Exception AggregateException içerisine alınır (wrapping)
+
+                try
+                {
+                    // accessing the result via GetResult
+                    int r = awaiterf.GetResult(); // AggregateException
+
+                    // or via Result property
+                    int r2 = task.Result; // ArgumentException
+
+                }
+                catch (AggregateException e)
+                {
+                    Console.WriteLine(e.Message);
+                }
+                catch (ArgumentException e)
+                {
+                    Console.WriteLine(e.Message);
+                }
+            });
+
+            Console.ReadLine(); // blocking
+        }
         #endregion
     }
 }
